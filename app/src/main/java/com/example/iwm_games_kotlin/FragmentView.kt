@@ -1,6 +1,8 @@
 package com.example.iwm_games_kotlin
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +21,11 @@ class FragmentView(private val game: Game) : Fragment() {
         name.text = game.name;
         Picasso.get().load(this.game.img).into(img);
 
+        button.setOnClickListener {
+            val openURL = Intent(Intent.ACTION_VIEW)
+            openURL.data = Uri.parse(game.link)
+            startActivity(openURL)
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 
