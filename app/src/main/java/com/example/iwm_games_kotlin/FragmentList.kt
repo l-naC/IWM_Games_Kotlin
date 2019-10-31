@@ -1,11 +1,13 @@
 package com.example.iwm_games_kotlin
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -23,21 +25,24 @@ class FragmentList : Fragment() {
         val URL = "https://my-json-server.typicode.com/bgdom/cours-android/games"
 
         val queue = Volley.newRequestQueue(this.activity)
-        val stringRequest = StringRequest(
-            Request.Method.GET, URL,
+        val request = StringRequest(Request.Method.GET, URL,
             Response.Listener<String> { response ->
                 Array<Game>::class.java
                 val games = Gson().fromJson(response, Array<Game>::class.java);
                 val obj = object : AdapterInterface {
-                    override fun open(game: Game) {}
                     override val games: Array<Game> = games
+                    override fun open(game: Game) {
+                        this@FragmentList
+                            .fragmentManager!!
+                            .beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.fragment,FragmentView(game))
+                            .commit()
+                    }
                 }
                 recycler.adapter = GamesAdapter(obj)
-            },
-            Response.ErrorListener {
-
-            })
-        queue.add(stringRequest)
+            }, Response.ErrorListener { error -> Log.e("test", error.localizedMessage) })
+        queue.add(request)
         super.onViewCreated(view, savedInstanceState)
     }
 }
