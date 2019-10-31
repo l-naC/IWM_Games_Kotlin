@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -21,6 +20,16 @@ class FragmentList : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        swipe.setOnRefreshListener {
+            fetchData(this)
+        }
+
+        fetchData(this)
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun fetchData(context: FragmentList) {
+        swipe.isRefreshing = true;
         recycler.layoutManager = LinearLayoutManager(this.activity)
         val URL = "https://my-json-server.typicode.com/bgdom/cours-android/games"
 
@@ -28,6 +37,7 @@ class FragmentList : Fragment() {
         val request = StringRequest(Request.Method.GET, URL,
             Response.Listener<String> { response ->
                 Array<Game>::class.java
+                swipe.isRefreshing = false
                 val games = Gson().fromJson(response, Array<Game>::class.java);
                 val obj = object : AdapterInterface {
                     override val games: Array<Game> = games
@@ -43,7 +53,6 @@ class FragmentList : Fragment() {
                 recycler.adapter = GamesAdapter(obj)
             }, Response.ErrorListener { error -> Log.e("test", error.localizedMessage) })
         queue.add(request)
-        super.onViewCreated(view, savedInstanceState)
     }
 }
 
