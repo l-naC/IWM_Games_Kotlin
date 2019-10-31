@@ -23,14 +23,19 @@ class FragmentView(private val game: Game) : Fragment() {
         name.text = game.name;
         Picasso.get().load(this.game.img).into(img);
 
+        //to WebView
         button.setOnClickListener {
-            /**val openURL = Intent(Intent.ACTION_VIEW)
-            openURL.data = Uri.parse(game.link)
-            startActivity(openURL)*/
             val value: String = Uri.parse(game.link).toString()
             val openWEBVIEW = Intent(this.context, ActivityWebView::class.java)
             openWEBVIEW.putExtra("link", value)
             startActivity(openWEBVIEW)
+        }
+
+        //to Navigator
+        button2.setOnClickListener {
+            val openURL = Intent(Intent.ACTION_VIEW)
+            openURL.data = Uri.parse(game.link)
+            startActivity(openURL)
         }
 
         super.onViewCreated(view, savedInstanceState)
